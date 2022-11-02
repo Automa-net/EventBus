@@ -6,6 +6,8 @@ use AutomaNet\EventBus\Contracts\Event\EventInterface;
 
 class ReflectionEventHandler
 {
+    public const HANDLE_METHOD_PREFIX = 'handle';
+
     private \ReflectionMethod $reflectionMethod;
 
     public function __construct(\ReflectionMethod $reflectionMethod)
@@ -25,7 +27,7 @@ class ReflectionEventHandler
 
     public function getEventName(): string
     {
-        return substr($this->getMethodName(), strlen('handle'));
+        return substr($this->getMethodName(), strlen(self::HANDLE_METHOD_PREFIX));
     }
 
     public function getPropertyEventClass(): string

@@ -4,7 +4,6 @@ namespace AutomaNet\EventBus\Events;
 
 use AutomaNet\EventBus\Contracts\Event\EventInterface;
 use AutomaNet\EventBus\Contracts\Event\EventPayloadInterface;
-use AutomaNet\EventBus\Factory\EventFactory;
 
 abstract class Event implements EventInterface
 {

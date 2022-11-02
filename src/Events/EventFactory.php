@@ -1,6 +1,6 @@
 <?php
 
-namespace AutomaNet\EventBus\Factory;
+namespace AutomaNet\EventBus\Events;
 
 use AutomaNet\EventBus\Contracts\Event\EventFactoryInterface;
 use AutomaNet\EventBus\Contracts\Event\EventInterface;
@@ -48,10 +48,17 @@ class EventFactory implements EventFactoryInterface
      * @param IMessage $message
      * @return T
      * @throws \ReflectionException
+     * @throws \Exception
      */
     public static function fromMessage(string $eventClass, IMessage $message): EventInterface
     {
-        return self::create($eventClass, $message->getUuid(), $message->getCreatedAt(), $message->getBody());
+        $event = self::create($eventClass, $message->getUuid(), $message->getCreatedAt(), $message->getBody());
+
+        if ($event->getName() !== $message->getEventName()) {
+            throw new \InvalidArgumentException('Message event name:' . $message->getEventName() . ' is not equal to ' . $event->getName() . ' event class');
+        }
+
+        return $event;
     }
 
     /**

@@ -20,7 +20,7 @@ class EventBus implements EventBusInterface
 
     public function subscribe($eventListenerClassName, ?int $priority = 100, ?string $connection = null): void
     {
-        $this->subscriptionManager->registerListener($eventListenerClassName, $priority);
+        $this->subscriptionManager->registerSubscriber($eventListenerClassName, $priority);
     }
 
     public function publish(array $events, ?string $connection = null): void

@@ -7,12 +7,12 @@ use AutomaNet\EventBus\Reflection\ReflectionEventHandler;
 interface EventBusSubscriptionManagerInterface
 {
     /**
-     * @param string $listener
+     * @param string $subscriber
      * @param int $priority
      * @return void
      * @throws \Exception
      */
-    public function registerListener(string $listener, int $priority = 10);
+    public function registerSubscriber(string $subscriber, int $priority);
 
     /**
      * @param string $eventName
@@ -20,7 +20,7 @@ interface EventBusSubscriptionManagerInterface
      * @param int $priority
      * @return void
      */
-    public function registerHandler(string $eventName, ReflectionEventHandler $reflectionEventHandler, int $priority = 10);
+    public function registerHandler(string $eventName, ReflectionEventHandler $reflectionEventHandler, int $priority);
 
     /**
      * @param string $eventName

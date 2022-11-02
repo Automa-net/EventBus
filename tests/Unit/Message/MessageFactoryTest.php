@@ -37,7 +37,10 @@ class MessageFactoryTest extends TestCase
         $this->assertSame($uuid, $message->getUuid());
         $this->assertSame($eventName, $message->getEventName());
         $this->assertSame($createdAt->format('Y-m-d H:i:s'), $message->getCreatedAt()->format('Y-m-d H:i:s'));
-        $this->assertSame($payload, $message->getBody());
+        $this->assertEquals($payload, $message->getBody());
+        $this->assertSame($uuid, $message->getHeaders()[IMessage::HEADER_UUID_KEY]);
+        $this->assertSame($eventName, $message->getHeaders()[IMessage::HEADER_EVENT_NAME_KEY]);
+        $this->assertSame($createdAt->format(\DateTimeInterface::ATOM), $message->getHeaders()[IMessage::HEADER_CREATED_AT]);
         $this->assertSame($projectName, $message->getHeaders()[IMessage::HEADER_PUBLISHED_BY]);
         $this->assertSame($routingKey, $message->getRoutingKey());
     }
@@ -60,7 +63,7 @@ class MessageFactoryTest extends TestCase
         $this->assertSame($event->getUuid(), $message->getUuid());
         $this->assertSame($event->getName(), $message->getEventName());
         $this->assertSame($event->getCreatedAt()->format('Y-m-d H:i:s'), $message->getCreatedAt()->format('Y-m-d H:i:s'));
-        $this->assertSame($event->getPayload()->toArray(), $message->getBody());
+        $this->assertEquals($event->getPayload()->toArray(), $message->getBody());
         $this->assertSame($projectName, $message->getHeaders()[IMessage::HEADER_PUBLISHED_BY]);
         $this->assertSame($prefix . '.Product.Updated', $message->getRoutingKey());
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AutomaNet\EventBus\Factory;
+namespace AutomaNet\EventBus;
 
 use AutomaNet\EventBus\Contracts\EventBus\EventBusFactoryInterface;
 use AutomaNet\EventBus\Contracts\EventBus\EventBusInterface;

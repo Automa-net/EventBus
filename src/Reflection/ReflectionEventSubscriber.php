@@ -6,8 +6,6 @@ use AutomaNet\EventBus\Contracts\Subscription\EventSubscriberInterface;
 
 class ReflectionEventSubscriber
 {
-    private const HANDLE_METHOD_PREFIX = 'handle';
-
     /**
      * @var \ReflectionClass<EventSubscriberInterface>
      */
@@ -30,7 +28,7 @@ class ReflectionEventSubscriber
     {
         $handlers = array_map(fn (\ReflectionMethod $reflectionMethod) => new ReflectionEventHandler($reflectionMethod), array_filter(
             $this->reflectionClass->getMethods(),
-            fn (\ReflectionMethod $reflectionMethod) => $reflectionMethod->getName() !== self::HANDLE_METHOD_PREFIX && strpos($reflectionMethod->getName(), self::HANDLE_METHOD_PREFIX) === 0
+            fn (\ReflectionMethod $reflectionMethod) => $reflectionMethod->getName() !== ReflectionEventHandler::HANDLE_METHOD_PREFIX && strpos($reflectionMethod->getName(), ReflectionEventHandler::HANDLE_METHOD_PREFIX) === 0
         ));
 
         if (empty($handlers)) {

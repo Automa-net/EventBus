@@ -10,7 +10,7 @@ use AutomaNet\EventBus\Contracts\Subscription\SubscriptionHandlerResolverInterfa
 use AutomaNet\EventBus\Dispatchers\EventDispatcher;
 use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqEventBusConnectionFactory;
 use AutomaNet\EventBus\EventBus;
-use AutomaNet\EventBus\Factory\EventFactory;
+use AutomaNet\EventBus\Events\EventFactory;
 
 class RabbitMqEventBusFactory implements EventBusFactoryInterface
 {

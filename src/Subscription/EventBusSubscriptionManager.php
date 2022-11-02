@@ -14,15 +14,35 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
     private array $handlers = [];
 
     /**
-     * @param string $listener
+     * @var array<string>
+     */
+    private array $registeredListeners = [];
+
+    /**
+     * @param string $subscriber
      * @param int $priority
      * @return void
      * @throws \Exception
      */
-    public function registerListener(string $listener, int $priority = 10)
+    public function registerSubscriber(string $subscriber, int $priority = 100)
     {
-        foreach ((new ReflectionEventSubscriber($listener))->getHandlers() as $reflectionEventHandler) {
+        $this->assertListenerIsNotRegistered($subscriber);
+
+        foreach ((new ReflectionEventSubscriber($subscriber))->getHandlers() as $reflectionEventHandler) {
             $this->registerHandler($reflectionEventHandler->getEventName(), $reflectionEventHandler, $priority);
+        }
+
+        $this->registeredListeners[] = $subscriber;
+    }
+
+    /**
+     * @param string $subscriber
+     * @return void
+     */
+    private function assertListenerIsNotRegistered(string $subscriber)
+    {
+        if (in_array($subscriber, $this->registeredListeners)) {
+            throw new \InvalidArgumentException('Listener ' . $subscriber . ' already registered');
         }
     }
 
@@ -32,7 +52,7 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
      * @param int $priority
      * @return void
      */
-    public function registerHandler(string $eventName, ReflectionEventHandler $reflectionEventHandler, int $priority = 10)
+    public function registerHandler(string $eventName, ReflectionEventHandler $reflectionEventHandler, int $priority = 100)
     {
         if (!isset($this->handlers[$eventName])) {
             $this->handlers[$eventName] = [];

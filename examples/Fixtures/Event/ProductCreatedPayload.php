@@ -4,7 +4,7 @@ namespace AutomaNet\EventBus\Examples\Fixtures\Event;
 
 use AutomaNet\EventBus\Events\EventPayload;
 
-class ProductUpdatedEventPayload extends EventPayload
+class ProductCreatedPayload extends EventPayload
 {
     private int $id;
 

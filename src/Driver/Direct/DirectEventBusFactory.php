@@ -9,7 +9,7 @@ use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterfa
 use AutomaNet\EventBus\Contracts\Subscription\SubscriptionHandlerResolverInterface;
 use AutomaNet\EventBus\Dispatchers\EventDispatcher;
 use AutomaNet\EventBus\EventBus;
-use AutomaNet\EventBus\Factory\EventFactory;
+use AutomaNet\EventBus\Events\EventFactory;
 
 class DirectEventBusFactory implements EventBusFactoryInterface
 {
