@@ -17,8 +17,8 @@ class EventBusSubscriptionManagerTest extends TestCase
         $subscriptionManager->registerSubscriber(SecondProductSubscriber::class, 10);
 
         $this->assertCount(2, $subscriptionManager->getHandlersByName('ProductUpdated'));
-        $this->assertSame(SecondProductSubscriber::class, $subscriptionManager->getHandlersByName('ProductUpdated')[0]->getListenerClass());
-        $this->assertSame(ProductSubscriber::class, $subscriptionManager->getHandlersByName('ProductUpdated')[1]->getListenerClass());
+        $this->assertSame(SecondProductSubscriber::class, $subscriptionManager->getHandlersByName('ProductUpdated')[0]->getSubscriberClass());
+        $this->assertSame(ProductSubscriber::class, $subscriptionManager->getHandlersByName('ProductUpdated')[1]->getSubscriberClass());
     }
 
     public function testFailDoubleRegisterSameSubscriber()

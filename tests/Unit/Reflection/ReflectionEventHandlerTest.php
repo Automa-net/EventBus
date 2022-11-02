@@ -15,7 +15,7 @@ class ReflectionEventHandlerTest extends TestCase
 
         $reflectionHandler = new ReflectionEventHandler(new \ReflectionMethod($productSubscriber, 'handleProductUpdated'));
 
-        $this->assertSame(ProductSubscriber::class, $reflectionHandler->getListenerClass());
+        $this->assertSame(ProductSubscriber::class, $reflectionHandler->getSubscriberClass());
         $this->assertSame('handleProductUpdated', $reflectionHandler->getMethodName());
         $this->assertSame('ProductUpdated', $reflectionHandler->getEventName());
         $this->assertSame(ProductUpdated::class, $reflectionHandler->getPropertyEventClass());

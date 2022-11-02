@@ -15,7 +15,7 @@ class ReflectionEventHandler
         $this->reflectionMethod = $reflectionMethod;
     }
 
-    public function getListenerClass(): string
+    public function getSubscriberClass(): string
     {
         return $this->reflectionMethod->getDeclaringClass()->getName();
     }
