@@ -1,0 +1,6 @@
+/examples/config.php
+.phpstan/tmp
+.php-cs-fixer.cache
+vendor
+.idea/
+composer.lock

@@ -1,0 +1,33 @@
+{
+    "name": "automa.net/eventbus",
+    "description": "EventBus library",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "AutomaNet\\EventBus\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AutomaNet\\EventBus\\Examples\\Fixtures\\": "examples/Fixtures/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Slawomir Lech",
+            "email": "slawek@automa.net"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "ramsey/uuid": "^4.2",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "symfony/dependency-injection": "^5.4",
+        "php-amqplib/php-amqplib": "^3.4",
+        "phpstan/phpstan": "^1.8",
+        "friendsofphp/php-cs-fixer": "^3.13"
+    }
+}
