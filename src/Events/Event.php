@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace AutomaNet\EventBus\Events;
 
 use AutomaNet\EventBus\Contracts\Event\EventInterface;

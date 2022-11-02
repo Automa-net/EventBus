@@ -52,7 +52,7 @@ class MessageFactory implements IMessageFactory
             $payload,
             $createdAt,
             $eventName,
-            $this->createRoutingKey($eventName),
+            $routingKey,
             $this->projectName
         );
     }
