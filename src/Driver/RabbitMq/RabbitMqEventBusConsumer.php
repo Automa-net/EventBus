@@ -39,8 +39,7 @@ class RabbitMqEventBusConsumer implements IEventConsumer
         bool $enableHeartbeatSender = false,
         ?int $maxConsumeAttempts = null,
         ?int $nextAttemptDelay = null
-    )
-    {
+    ) {
         $this->connectionFactory = $connectionFactory;
         $this->queue = $queue;
         $this->messageDispatcher = $messageDispatcher;

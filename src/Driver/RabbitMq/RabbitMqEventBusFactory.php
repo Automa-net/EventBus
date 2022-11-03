@@ -70,8 +70,7 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
                 $this->eventFactory
             ),
             $this->createAMQPMessageFactory($config),
-            $config['consumer']['enable_heartbeat_sender'],
-            true,
+            $config['consumer']['enable_heartbeat_sender']
         );
     }
 

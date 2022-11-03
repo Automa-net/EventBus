@@ -4,7 +4,6 @@ namespace AutomaNet\EventBus;
 
 use AutomaNet\EventBus\Contracts\EventBusManagerInterface;
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
-use AutomaNet\EventBus\EventBusFactory;
 use AutomaNet\EventBus\Subscription\EventBusSubscriptionManager;
 
 class EventBusManager implements EventBusManagerInterface

@@ -36,8 +36,7 @@ class RabbitMqEventBusPublisher implements IEventPublisher
         IMessageFactory                   $messageFactory,
         ?int $nextAttemptDelay = null,
         ?int $maxPublishAttempts = null
-    )
-    {
+    ) {
         $this->connectionFactory = $connectionFactory;
         $this->exchange = $exchange;
         $this->messageFactory = $messageFactory;
