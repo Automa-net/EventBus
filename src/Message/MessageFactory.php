@@ -43,6 +43,9 @@ class MessageFactory implements IMessageFactory
      * @param string $eventName
      * @param \DateTimeImmutable $createdAt
      * @param array $payload
+     * @param string $publishedBy
+     * @param string $routingKey
+     * @param \DateTimeImmutable|null $publishedAt
      * @return IMessage
      */
     public function create(string $uuid, string $eventName, \DateTimeImmutable $createdAt, array $payload, string $publishedBy, string $routingKey, ?\DateTimeImmutable $publishedAt = null): IMessage
@@ -53,7 +56,8 @@ class MessageFactory implements IMessageFactory
             $createdAt,
             $eventName,
             $routingKey,
-            $this->projectName
+            $publishedBy,
+            $publishedAt
         );
     }
 

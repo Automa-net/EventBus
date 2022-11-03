@@ -17,8 +17,12 @@ class RabbitMqEventBusPublisher implements IEventPublisher
 {
     use RabbitMqFactoryConnectable;
 
-    public const MAX_PUBLISH_ATTEMPTS = 3;
-    public const NEXT_ATTEMPT_DELAY = 10;
+    public const DEFAULT_MAX_PUBLISH_ATTEMPTS = 3;
+    public const DEFAULT_NEXT_ATTEMPT_DELAY = 10;
+
+    private int $nextAttemptDelay;
+
+    private int $maxPublishAttempts;
 
     private string $exchange;
 
@@ -29,12 +33,16 @@ class RabbitMqEventBusPublisher implements IEventPublisher
     public function __construct(
         RabbitMqEventBusConnectionFactory $connectionFactory,
         string                            $exchange,
-        IMessageFactory                   $messageFactory
+        IMessageFactory                   $messageFactory,
+        ?int $nextAttemptDelay = null,
+        ?int $maxPublishAttempts = null
     )
     {
         $this->connectionFactory = $connectionFactory;
         $this->exchange = $exchange;
         $this->messageFactory = $messageFactory;
+        $this->nextAttemptDelay = $nextAttemptDelay ?? static::DEFAULT_NEXT_ATTEMPT_DELAY;
+        $this->maxPublishAttempts = $maxPublishAttempts ?? static::DEFAULT_MAX_PUBLISH_ATTEMPTS;
     }
 
     /**
@@ -55,15 +63,17 @@ class RabbitMqEventBusPublisher implements IEventPublisher
     public function publishMessage(IMessage $message): void
     {
         try {
+            $this->increaseAttempts();
+
             $message->setPublishedAt(new \DateTimeImmutable('now'));
 
             $this->getChannel()->basic_publish($this->createAMQPMessage($message), $this->exchange, $message->getRoutingKey());
         } catch (AMQPConnectionClosedException $exception) {
             $this->assertNotMaxPublishAttemptsReached();
 
-            $this->increaseAttempts();
-
-            sleep($this->publishAttempts * self::NEXT_ATTEMPT_DELAY);
+            if ($this->nextAttemptDelay > 0) {
+                sleep($this->publishAttempts * $this->nextAttemptDelay);
+            }
 
             $this->publishMessage($message);
         }
@@ -75,7 +85,7 @@ class RabbitMqEventBusPublisher implements IEventPublisher
      */
     private function assertNotMaxPublishAttemptsReached(): void
     {
-        if ($this->publishAttempts >= self::MAX_PUBLISH_ATTEMPTS) {
+        if ($this->publishAttempts >= $this->maxPublishAttempts) {
             throw new MaxPublishAttemptsException('Max publish attempts reached.');
         }
     }

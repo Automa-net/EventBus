@@ -22,6 +22,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
+        "php": "^7.4|^8.0",
+        "ext-json": "*",
         "ramsey/uuid": "^4.2",
         "psr/container": "^1.0"
     },

@@ -25,6 +25,7 @@ $config = [
 
     'consumer' => [
         'queue' => INTEGRATION_EVENTBUS_AMQP_CONSUMER_QUEUE,
+        'enable_heartbeat_sender' => false
     ],
 
     'publisher' => [

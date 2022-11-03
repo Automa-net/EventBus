@@ -21,6 +21,7 @@ $config = [
 
     'consumer' => [
         'queue' => INTEGRATION_EVENTBUS_AMQP_CONSUMER_QUEUE,
+        'enable_heartbeat_sender' => true,
     ],
 
     'publisher' => [
@@ -50,6 +51,7 @@ $eventBusFactory = new RabbitMqEventBusFactory(
 
 // Create a new instance of the subscription manager
 $subscriptionManager = new EventBusSubscriptionManager();
+$subscriptionManager->registerSubscriber(ProductSubscriber::class);
 
 // Create a new instance of the RabbitMqConsumer
 $consumer = $eventBusFactory->createConsumer($config, $subscriptionManager);

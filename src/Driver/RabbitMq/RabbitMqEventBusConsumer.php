@@ -16,8 +16,12 @@ use PhpAmqpLib\Message\AMQPMessage;
 class RabbitMqEventBusConsumer implements IEventConsumer
 {
     use RabbitMqFactoryConnectable, RabbitMqHasHeartbeatSender;
-    public const MAX_CONSUME_ATTEMPTS = 3;
-    public const NEXT_ATTEMPT_DELAY = 10;
+    public const DEFAULT_MAX_CONSUME_ATTEMPTS = 3;
+    public const DEFAULT_NEXT_ATTEMPT_DELAY = 10;
+
+    private int $maxConsumeAttempts;
+
+    private int $nextAttemptDelay;
 
     private string $queue;
 
@@ -25,39 +29,52 @@ class RabbitMqEventBusConsumer implements IEventConsumer
 
     private MessageFactoryInterface $messageFactory;
 
-    private int $publishAttempts = 0;
+    private int $consumeAttempts = 0;
 
     public function __construct(
         RabbitMqEventBusConnectionFactory $connectionFactory,
         string                            $queue,
         IEventMessageDispatcher           $messageDispatcher,
-        MessageFactoryInterface           $messageFactory
+        MessageFactoryInterface           $messageFactory,
+        bool $enableHeartbeatSender = false,
+        ?int $maxConsumeAttempts = null,
+        ?int $nextAttemptDelay = null
     )
     {
         $this->connectionFactory = $connectionFactory;
         $this->queue = $queue;
         $this->messageDispatcher = $messageDispatcher;
         $this->messageFactory = $messageFactory;
+        $this->enableHeartbeatSender = $enableHeartbeatSender;
+        $this->maxConsumeAttempts = $maxConsumeAttempts ?? self::DEFAULT_MAX_CONSUME_ATTEMPTS;
+        $this->nextAttemptDelay = $nextAttemptDelay ?? self::DEFAULT_NEXT_ATTEMPT_DELAY;
     }
 
     public function consume(): void
     {
+        $this->resetAttempts();
+
+        $this->consumeMessages();
+    }
+
+    private function consumeMessages(): void
+    {
         try {
             $channel = $this->getChannel();
 
+            $this->increaseAttempts();
+
             $channel->basic_consume($this->queue, '', false, false, false, false, [$this, 'processMessage']);
 
-            while ($this->isConnectionOpen()) {
-                $this->resetAttempts();
+            $this->resetAttempts();
 
-                $channel->consume();
-            }
+            $channel->consume();
         } catch (AMQPConnectionClosedException $exception) {
             $this->assertNotMaxConsumeAttemptsReached();
 
-            $this->increaseAttempts();
-
-            sleep($this->publishAttempts * self::NEXT_ATTEMPT_DELAY);
+            if ($this->nextAttemptDelay > 0) {
+                sleep($this->consumeAttempts * $this->nextAttemptDelay);
+            }
 
             $this->consume();
         }
@@ -69,7 +86,7 @@ class RabbitMqEventBusConsumer implements IEventConsumer
      */
     private function assertNotMaxConsumeAttemptsReached(): void
     {
-        if ($this->publishAttempts >= self::MAX_CONSUME_ATTEMPTS) {
+        if ($this->consumeAttempts >= $this->maxConsumeAttempts) {
             throw new MaxPublishAttemptsException('Max publish attempts reached');
         }
     }
@@ -79,7 +96,7 @@ class RabbitMqEventBusConsumer implements IEventConsumer
      */
     private function resetAttempts(): void
     {
-        $this->publishAttempts = 0;
+        $this->consumeAttempts = 0;
     }
 
     /**
@@ -87,7 +104,7 @@ class RabbitMqEventBusConsumer implements IEventConsumer
      */
     private function increaseAttempts(): void
     {
-        $this->publishAttempts++;
+        $this->consumeAttempts++;
     }
 
     /**

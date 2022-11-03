@@ -41,7 +41,7 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
 
         return new EventBus(
             new RabbitMqEventBusPublisher(
-                new RabbitMqEventBusConnectionFactory($config),
+                $this->createConnectionFactory($config),
                 $config['publisher']['exchange'],
                 $this->createAMQPMessageFactory($config)
             ),
@@ -62,15 +62,26 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
         }
 
         return new RabbitMqEventBusConsumer(
-            new RabbitMqEventBusConnectionFactory($config),
+            $this->createConnectionFactory($config),
             $config['consumer']['queue'],
             new EventDispatcher(
                 $subscriptionManager,
                 $this->subscriptionHandlerResolver,
                 $this->eventFactory
             ),
-            $this->createAMQPMessageFactory($config)
+            $this->createAMQPMessageFactory($config),
+            $config['consumer']['enable_heartbeat_sender'],
+            true,
         );
+    }
+
+    /**
+     * @param array $config
+     * @return RabbitMqEventBusConnectionFactory
+     */
+    private function createConnectionFactory(array $config): RabbitMqEventBusConnectionFactory
+    {
+        return new RabbitMqEventBusConnectionFactory($config);
     }
 
     /**
