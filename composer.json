@@ -3,6 +3,11 @@
     "description": "EventBus library",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://automa.net",
+    "keywords": [
+        "eventbus",
+        "rabbitmq"
+    ],
     "autoload": {
         "psr-4": {
             "AutomaNet\\EventBus\\": "src/"
@@ -15,6 +20,10 @@
         }
     },
     "authors": [
+        {
+            "name": "Automa.net project",
+            "homepage": "https://automa.net"
+        },
         {
             "name": "Slawomir Lech",
             "email": "slawek@automa.net"
