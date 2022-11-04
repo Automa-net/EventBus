@@ -43,7 +43,7 @@ class EventBusManager implements EventBusManagerInterface
         return $this->eventBuses[$connection];
     }
 
-    private function getSubscriptionManager(?string $connection = null): EventBusSubscriptionManagerInterface
+    public function getSubscriptionManager(?string $connection = null): EventBusSubscriptionManagerInterface
     {
         if (!isset($this->subscriptionManagers[$connection])) {
             $this->subscriptionManagers[$connection] = new EventBusSubscriptionManager();
