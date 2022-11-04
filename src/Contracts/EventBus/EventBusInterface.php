@@ -2,6 +2,8 @@
 
 namespace AutomaNet\EventBus\Contracts\EventBus;
 
+use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+
 interface EventBusInterface
 {
     /**
@@ -13,4 +15,9 @@ interface EventBusInterface
      * Publishes the events from the domain event stream to the listeners.
      */
     public function publish(array $events): void;
+
+    /**
+     * @return EventBusSubscriptionManagerInterface
+     */
+    public function getSubscriptionManager(): EventBusSubscriptionManagerInterface;
 }
