@@ -34,7 +34,7 @@ class MessageFactory implements IMessageFactory
             $event->getCreatedAt(),
             $event->getPayload()->toArray(),
             $this->projectName,
-            $this->createRoutingKey($event->getName())
+            $event->getRoutingKey() ? $event->getRoutingKey() : $this->createRoutingKey($event->getName())
         );
     }
 
@@ -62,6 +62,8 @@ class MessageFactory implements IMessageFactory
     }
 
     /**
+     * Automatically create routing key based on event name
+     *
      * @param string $eventName
      * @return string
      */

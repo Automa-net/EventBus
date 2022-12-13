@@ -67,4 +67,28 @@ class MessageFactoryTest extends TestCase
         $this->assertSame($projectName, $message->getHeaders()[IMessage::HEADER_PUBLISHED_BY]);
         $this->assertSame($prefix . '.Product.Updated', $message->getRoutingKey());
     }
+
+    public function testCreateMessageFromEventWithCustomRoutingKey()
+    {
+        $routingKey = 'Custom.Routing.Key';
+        $projectName = 'automa.net';
+        $payload = [
+            'id' => 1,
+            'name' => 'T-Shirt'
+        ];
+
+        $event = ProductUpdated::newFromArray($payload);
+        $event->setRoutingKey($routingKey);
+
+        $messageFactory = new MessageFactory('prefix', $projectName);
+        $message = $messageFactory->fromEvent($event);
+
+        $this->assertInstanceOf( IMessage::class, $message);
+        $this->assertSame($event->getUuid(), $message->getUuid());
+        $this->assertSame($event->getName(), $message->getEventName());
+        $this->assertSame($event->getCreatedAt()->format('Y-m-d H:i:s'), $message->getCreatedAt()->format('Y-m-d H:i:s'));
+        $this->assertEquals($event->getPayload()->toArray(), $message->getBody());
+        $this->assertSame($projectName, $message->getHeaders()[IMessage::HEADER_PUBLISHED_BY]);
+        $this->assertSame($routingKey, $message->getRoutingKey());
+    }
 }

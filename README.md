@@ -1,5 +1,12 @@
 #  Automa.net - EventBus
 
+<div align="center"></div>
+
+[![Latest Stable Version](http://poser.pugx.org/automa.net/eventbus/v)](https://packagist.org/packages/automa.net/eventbus)
+[![Latest Unstable Version](http://poser.pugx.org/automa.net/eventbus/v/unstable)](https://packagist.org/packages/automa.net/eventbus) 
+[![License](http://poser.pugx.org/automa.net/eventbus/license)](https://packagist.org/packages/automa.net/eventbus) 
+[![PHP Version Require](http://poser.pugx.org/automa.net/eventbus/require/php)](https://packagist.org/packages/automa.net/eventbus)
+
 EventBus is a publish/subscribe event bus library.
 
 The library gives the possibility to use multiple events buses at once, to do that use ``EventBusManager``.

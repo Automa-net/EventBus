@@ -28,8 +28,7 @@ class Message implements IMessage
         string $routingKey,
         string $publishedBy,
         ?\DateTimeImmutable $publishedAt = null
-    )
-    {
+    ) {
         $this->uuid = $uuid;
         $this->body = $body;
         $this->createdAt = $createdAt;

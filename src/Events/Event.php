@@ -13,6 +13,8 @@ abstract class Event implements EventInterface
 
     protected \DateTimeImmutable $createdAt;
 
+    protected ?string $routingKey = null;
+
     final public function __construct(string $uuid, \DateTimeImmutable $createdAt, EventPayloadInterface $payload)
     {
         $this->uuid = $uuid;
@@ -60,5 +62,25 @@ abstract class Event implements EventInterface
     final public static function newFromArray(array $payload): self
     {
         return EventFactory::createNew(static::class, $payload);
+    }
+
+    /**
+     * Get custom routing key
+     *
+     * @return string|null
+     */
+    public function getRoutingKey(): ?string
+    {
+        return $this->routingKey;
+    }
+
+    /**
+     * Set custom routing key
+     *
+     * @param string|null $routingKey
+     */
+    public function setRoutingKey(?string $routingKey): void
+    {
+        $this->routingKey = $routingKey;
     }
 }
