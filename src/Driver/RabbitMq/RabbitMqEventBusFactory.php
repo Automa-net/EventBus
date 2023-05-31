@@ -61,16 +61,17 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
             throw new \Exception('No consumer configuration found for this connection');
         }
 
+        $consumerConfig = RabbitMqConsumerConfig::fromArray($config['consumer']);
+
         return new RabbitMqEventBusConsumer(
             $this->createConnectionFactory($config),
-            $config['consumer']['queue'],
+            RabbitMqConsumerConfig::fromArray($config['consumer']),
             new EventDispatcher(
                 $subscriptionManager,
                 $this->subscriptionHandlerResolver,
                 $this->eventFactory
             ),
             $this->createAMQPMessageFactory($config),
-            $config['consumer']['enable_heartbeat_sender']
         );
     }
 

@@ -16,14 +16,8 @@ use PhpAmqpLib\Message\AMQPMessage;
 class RabbitMqEventBusConsumer implements IEventConsumer
 {
     use RabbitMqFactoryConnectable, RabbitMqHasHeartbeatSender;
-    public const DEFAULT_MAX_CONSUME_ATTEMPTS = 3;
-    public const DEFAULT_NEXT_ATTEMPT_DELAY = 10;
 
-    private int $maxConsumeAttempts;
-
-    private int $nextAttemptDelay;
-
-    private string $queue;
+    private RabbitMqConsumerConfig $config;
 
     private IEventMessageDispatcher $messageDispatcher;
 
@@ -33,20 +27,15 @@ class RabbitMqEventBusConsumer implements IEventConsumer
 
     public function __construct(
         RabbitMqEventBusConnectionFactory $connectionFactory,
-        string                            $queue,
+        RabbitMqConsumerConfig            $consumerConfig,
         IEventMessageDispatcher           $messageDispatcher,
-        MessageFactoryInterface           $messageFactory,
-        bool $enableHeartbeatSender = false,
-        ?int $maxConsumeAttempts = null,
-        ?int $nextAttemptDelay = null
+        MessageFactoryInterface           $messageFactory
     ) {
         $this->connectionFactory = $connectionFactory;
-        $this->queue = $queue;
+        $this->config = $consumerConfig;
         $this->messageDispatcher = $messageDispatcher;
         $this->messageFactory = $messageFactory;
-        $this->enableHeartbeatSender = $enableHeartbeatSender;
-        $this->maxConsumeAttempts = $maxConsumeAttempts ?? self::DEFAULT_MAX_CONSUME_ATTEMPTS;
-        $this->nextAttemptDelay = $nextAttemptDelay ?? self::DEFAULT_NEXT_ATTEMPT_DELAY;
+        $this->enableHeartbeatSender = $consumerConfig->isEnableHeartbeatSender();
     }
 
     public function consume(): void
@@ -63,7 +52,8 @@ class RabbitMqEventBusConsumer implements IEventConsumer
 
             $this->increaseAttempts();
 
-            $channel->basic_consume($this->queue, '', false, false, false, false, [$this, 'processMessage']);
+            $channel->basic_qos(null, $this->config->getPrefetchCount(), null); /** @phpstan-ignore-line */
+            $channel->basic_consume($this->config->getQueue(), '', false, false, false, false, [$this, 'processMessage']);
 
             $this->resetAttempts();
 
@@ -71,8 +61,8 @@ class RabbitMqEventBusConsumer implements IEventConsumer
         } catch (AMQPConnectionClosedException $exception) {
             $this->assertNotMaxConsumeAttemptsReached();
 
-            if ($this->nextAttemptDelay > 0) {
-                sleep($this->consumeAttempts * $this->nextAttemptDelay);
+            if ($this->config->getNextAttemptDelay() > 0) {
+                sleep($this->consumeAttempts * $this->config->getMaxConsumeAttempts());
             }
 
             $this->consume();
@@ -85,7 +75,7 @@ class RabbitMqEventBusConsumer implements IEventConsumer
      */
     private function assertNotMaxConsumeAttemptsReached(): void
     {
-        if ($this->consumeAttempts >= $this->maxConsumeAttempts) {
+        if ($this->consumeAttempts >= $this->config->getMaxConsumeAttempts()) {
             throw new MaxPublishAttemptsException('Max publish attempts reached');
         }
     }

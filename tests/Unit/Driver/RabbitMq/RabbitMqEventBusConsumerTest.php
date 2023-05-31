@@ -4,6 +4,7 @@ namespace AutomaNet\EventBus\Tests\Unit\Driver\RabbitMq;
 
 use AutomaNet\EventBus\Dispatchers\EventDispatcher;
 use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqEventBusConnectionFactory;
+use AutomaNet\EventBus\Driver\RabbitMq\RabbitMqConsumerConfig;
 use AutomaNet\EventBus\Driver\RabbitMq\RabbitMqEventBusConsumer;
 use AutomaNet\EventBus\Events\EventFactory;
 use AutomaNet\EventBus\Subscription\EventBusSubscriptionHandlerResolver;
@@ -78,12 +79,11 @@ class RabbitMqEventBusConsumerTest extends TestCase
 
         $consumer = new RabbitMqEventBusConsumer(
             $rabbitMqConnectionFactoryMock,
-            'queue',
+            RabbitMqConsumerConfig::fromArray([
+                'queue' => 'queue'
+            ]),
             $eventDispatcher,
             new MessageFactory('Prefix', 'Project.A'),
-            false,
-            3,
-            0
         );
 
         $consumer->consume();

@@ -9,5 +9,7 @@ class ProductSubscriber extends EventSubscriber {
     public function handleProductUpdated(ProductUpdated $event)
     {
         echo $event->getName() . " has been handled \n";
+
+        sleep(5);
     }
 }
