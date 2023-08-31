@@ -9,9 +9,8 @@ use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqEventBusConnectionFact
 use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqFactoryConnectable;
 use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqHasHeartbeatSender;
 use AutomaNet\EventBus\Driver\RabbitMq\Contracts\MessageFactoryInterface;
-use AutomaNet\EventBus\Exceptions\MaxPublishAttemptsException;
-use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Log\LoggerInterface;
 
 class RabbitMqEventBusConsumer implements IEventConsumer
 {
@@ -23,77 +22,38 @@ class RabbitMqEventBusConsumer implements IEventConsumer
 
     private MessageFactoryInterface $messageFactory;
 
-    private int $consumeAttempts = 0;
+    private LoggerInterface $logger;
 
     public function __construct(
         RabbitMqEventBusConnectionFactory $connectionFactory,
         RabbitMqConsumerConfig            $consumerConfig,
         IEventMessageDispatcher           $messageDispatcher,
-        MessageFactoryInterface           $messageFactory
+        MessageFactoryInterface           $messageFactory,
+        LoggerInterface                   $logger
     ) {
         $this->connectionFactory = $connectionFactory;
         $this->config = $consumerConfig;
         $this->messageDispatcher = $messageDispatcher;
         $this->messageFactory = $messageFactory;
+        $this->logger = $logger;
         $this->enableHeartbeatSender = $consumerConfig->isEnableHeartbeatSender();
     }
 
     public function consume(): void
     {
-        $this->resetAttempts();
-
         $this->consumeMessages();
     }
 
     private function consumeMessages(): void
     {
-        try {
-            $channel = $this->getChannel();
+        $channel = $this->getChannel();
 
-            $this->increaseAttempts();
+        $this->logger->notice('Start consuming messages');
 
-            $channel->basic_qos(null, $this->config->getPrefetchCount(), null); /** @phpstan-ignore-line */
-            $channel->basic_consume($this->config->getQueue(), '', false, false, false, false, [$this, 'processMessage']);
+        $channel->basic_qos(null, $this->config->getPrefetchCount(), null); /** @phpstan-ignore-line */
+        $channel->basic_consume($this->config->getQueue(), '', false, false, false, false, [$this, 'processMessage']);
 
-            $this->resetAttempts();
-
-            $channel->consume();
-        } catch (AMQPConnectionClosedException $exception) {
-            $this->assertNotMaxConsumeAttemptsReached();
-
-            if ($this->config->getNextAttemptDelay() > 0) {
-                sleep($this->consumeAttempts * $this->config->getMaxConsumeAttempts());
-            }
-
-            $this->consume();
-        }
-    }
-
-    /**
-     * @return void
-     * @throws MaxPublishAttemptsException
-     */
-    private function assertNotMaxConsumeAttemptsReached(): void
-    {
-        if ($this->consumeAttempts >= $this->config->getMaxConsumeAttempts()) {
-            throw new MaxPublishAttemptsException('Max publish attempts reached');
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function resetAttempts(): void
-    {
-        $this->consumeAttempts = 0;
-    }
-
-    /**
-     * @return void
-     */
-    private function increaseAttempts(): void
-    {
-        $this->consumeAttempts++;
+        $channel->consume();
     }
 
     /**
@@ -102,9 +62,14 @@ class RabbitMqEventBusConsumer implements IEventConsumer
      */
     public function processMessage(AMQPMessage $AMQPMessage)
     {
-        $this->dispatch($this->messageFactory->fromAMQPMessage($AMQPMessage));
+        try {
+            $this->dispatch($this->messageFactory->fromAMQPMessage($AMQPMessage));
 
-        $AMQPMessage->ack();
+            $AMQPMessage->ack();
+        } catch (\Error|\Exception $e) {
+            $this->logger->error($e);
+            $AMQPMessage->nack();
+        }
     }
 
     /**

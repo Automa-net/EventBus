@@ -11,6 +11,8 @@ use AutomaNet\EventBus\Dispatchers\EventDispatcher;
 use AutomaNet\EventBus\Driver\RabbitMq\Connection\RabbitMqEventBusConnectionFactory;
 use AutomaNet\EventBus\EventBus;
 use AutomaNet\EventBus\Events\EventFactory;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class RabbitMqEventBusFactory implements EventBusFactoryInterface
 {
@@ -55,13 +57,17 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
      * @return RabbitMqEventBusConsumer
      * @throws \Exception
      */
-    public function createConsumer(array $config, EventBusSubscriptionManagerInterface $subscriptionManager): RabbitMqEventBusConsumer
+    public function createConsumer(array $config, EventBusSubscriptionManagerInterface $subscriptionManager, ?LoggerInterface $logger = null): RabbitMqEventBusConsumer
     {
         if (!isset($config['consumer'])) {
             throw new \Exception('No consumer configuration found for this connection');
         }
 
         $consumerConfig = RabbitMqConsumerConfig::fromArray($config['consumer']);
+
+        if ($logger === null) {
+            $logger = new NullLogger();
+        }
 
         return new RabbitMqEventBusConsumer(
             $this->createConnectionFactory($config),
@@ -72,6 +78,7 @@ class RabbitMqEventBusFactory implements EventBusFactoryInterface
                 $this->eventFactory
             ),
             $this->createAMQPMessageFactory($config),
+            $logger,
         );
     }
 

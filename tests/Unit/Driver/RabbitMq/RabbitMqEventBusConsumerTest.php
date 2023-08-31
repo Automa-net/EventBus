@@ -14,6 +14,8 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Psr\Log\NullLogger;
+use Psr\Log\Test\TestLogger;
 
 class RabbitMqEventBusConsumerTest extends TestCase
 {
@@ -84,6 +86,7 @@ class RabbitMqEventBusConsumerTest extends TestCase
             ]),
             $eventDispatcher,
             new MessageFactory('Prefix', 'Project.A'),
+            new TestLogger()
         );
 
         $consumer->consume();

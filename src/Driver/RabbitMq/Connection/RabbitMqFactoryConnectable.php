@@ -48,6 +48,11 @@ trait RabbitMqFactoryConnectable
 
     public function __destruct()
     {
+        $this->closeConnection();
+    }
+
+    public function closeConnection()
+    {
         if (in_array(RabbitMqHasHeartbeatSender::class, class_uses($this))) {
             $this->unregisterHeartbeatSender(); /** @phpstan-ignore-line */
         }

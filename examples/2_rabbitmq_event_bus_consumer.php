@@ -35,7 +35,9 @@ $config = [
 // For test purposes, Create a new exchange and queue
 $connection = new AMQPStreamConnection($config['host'], $config['port'], $config['user'], $config['password'], $config['vhost']);
 $channel = $connection->channel();
-$channel->queue_declare($config['consumer']['queue'], false, true, false, false);
+$channel->queue_declare($config['consumer']['queue'], false, true, false, false, false, new \PhpAmqpLib\Wire\AMQPTable([
+    'x-dead-letter-exchange' => 'vendor.example.exchange.dl'
+]));
 $channel->exchange_declare($config['publisher']['exchange'], AMQPExchangeType::TOPIC, false, true, false);
 $channel->queue_bind($config['consumer']['queue'], $config['publisher']['exchange'], 'vendor.#');
 $channel->close();
@@ -55,7 +57,7 @@ $subscriptionManager = new EventBusSubscriptionManager();
 $subscriptionManager->registerSubscriber(ProductSubscriber::class);
 
 // Create a new instance of the RabbitMqConsumer
-$consumer = $eventBusFactory->createConsumer($config, $subscriptionManager);
+$consumer = $eventBusFactory->createConsumer($config, $subscriptionManager, new \Symfony\Component\Console\Logger\ConsoleLogger(new \Symfony\Component\Console\Output\ConsoleOutput()));
 
 // Consume events
 $consumer->consume();
