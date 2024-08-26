@@ -50,8 +50,8 @@ class RabbitMqEventBusConsumer implements IEventConsumer
 
         $this->logger->notice('Start consuming messages');
 
-        $channel->basic_qos(null, $this->config->getPrefetchCount(), null); /** @phpstan-ignore-line */
-        $channel->basic_consume($this->config->getQueue(), '', false, false, false, false, [$this, 'processMessage']);
+        $channel->basic_qos(0, $this->config->getPrefetchCount(), false); /** @phpstan-ignore-line */
+        $channel->basic_consume($this->config->getQueue(), $this->config->getConsumerTag(), false, false, false, false, [$this, 'processMessage']);
 
         $channel->consume();
     }

@@ -10,6 +10,6 @@ class ProductSubscriber extends EventSubscriber {
     {
         echo $event->getName() . " has been handled \n";
 
-        sleep(5);
+        usleep(50000);
     }
 }

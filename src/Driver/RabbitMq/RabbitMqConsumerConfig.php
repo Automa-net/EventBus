@@ -6,6 +6,8 @@ class RabbitMqConsumerConfig
 {
     private string $queue;
 
+    private string $consumerTag = '';
+
     private bool $enableHeartbeatSender = false;
 
     private int $prefetchCount = 1000;
@@ -34,6 +36,11 @@ class RabbitMqConsumerConfig
         return $this->prefetchCount;
     }
 
+    public function getConsumerTag(): string
+    {
+        return $this->consumerTag;
+    }
+
     public static function fromArray(array $configData): self
     {
         $config = new RabbitMqConsumerConfig();
@@ -50,6 +57,10 @@ class RabbitMqConsumerConfig
 
         if (isset($configData['prefetch_count'])) {
             $config->prefetchCount = intval($configData['prefetch_count']);
+        }
+
+        if (isset($configData['consumer_tag'])) {
+            $config->consumerTag = strval($configData['consumer_tag']);
         }
 
         return $config;
