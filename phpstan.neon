@@ -3,7 +3,6 @@ parameters:
     tmpDir: .phpstan/tmp
     paths:
         - src
-        - tests
     ignoreErrors:
     excludePaths:
         - vendors

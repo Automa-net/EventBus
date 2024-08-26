@@ -9,6 +9,6 @@ class SecondProductSubscriber extends EventSubscriber
 {
     public function handleProductUpdated(ProductUpdated $event)
     {
-        echo $event->getName() . " has been handled \n";
+        echo $event->getName() . " has been handled by Second subscriber \n";
     }
 }

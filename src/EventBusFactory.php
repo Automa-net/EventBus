@@ -5,7 +5,13 @@ namespace AutomaNet\EventBus;
 use AutomaNet\EventBus\Contracts\EventBus\EventBusFactoryInterface;
 use AutomaNet\EventBus\Contracts\EventBus\EventBusInterface;
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+use AutomaNet\EventBus\Driver\Direct\DirectEventBusFactory;
+use AutomaNet\EventBus\Driver\RabbitMq\RabbitMqConsumerConfig;
 
+/**
+ * @phpstan-import-type DirectEventBusFactoryConfig from DirectEventBusFactory
+ * @phpstan-import-type RabbitMqConsumerConfigArray from RabbitMqConsumerConfig
+ */
 class EventBusFactory
 {
     /**
@@ -13,15 +19,19 @@ class EventBusFactory
      */
     private array $factories;
 
-    private array $connections;
+    /**
+     * @var array<string, DirectEventBusFactoryConfig|RabbitMqConsumerConfigArray>
+     */
+    private array $connectionConfig;
 
     /**
      * @param EventBusFactoryInterface[] $factories
+     * @param array<string, DirectEventBusFactoryConfig|RabbitMqConsumerConfigArray> $connectionConfig
      */
-    public function __construct(array $factories, array $connections)
+    public function __construct(array $factories, array $connectionConfig)
     {
         $this->factories = $factories;
-        $this->connections = $connections;
+        $this->connectionConfig = $connectionConfig;
     }
 
     /**
@@ -50,23 +60,17 @@ class EventBusFactory
      */
     private function getConnectionDriver(string $connection): string
     {
-        $driver = $this->getConnectionConfig($connection)['driver'];
-
-        if (!$driver) {
-            throw new \Exception('Missing driver');
-        }
-
-        return $driver;
+        return $this->getConnectionConfig($connection)['driver'];
     }
 
     /**
      * Retrieve config for connection
      *
      * @param string $connection
-     * @return array
+     * @return DirectEventBusFactoryConfig|RabbitMqConsumerConfigArray
      */
     private function getConnectionConfig(string $connection): array
     {
-        return $this->connections[$connection];
+        return $this->connectionConfig[$connection];
     }
 }

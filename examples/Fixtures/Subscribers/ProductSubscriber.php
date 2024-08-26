@@ -8,7 +8,7 @@ use AutomaNet\EventBus\Subscription\EventSubscriber;
 class ProductSubscriber extends EventSubscriber {
     public function handleProductUpdated(ProductUpdated $event)
     {
-        echo $event->getName() . " has been handled \n";
+        echo $event->getName() . " has been handled by first subscriber \n";
 
         usleep(50000);
     }

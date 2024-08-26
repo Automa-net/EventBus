@@ -11,6 +11,11 @@ use AutomaNet\EventBus\Dispatchers\EventDispatcher;
 use AutomaNet\EventBus\EventBus;
 use AutomaNet\EventBus\Events\EventFactory;
 
+/**
+ * @phpstan-type DirectEventBusFactoryConfig array{
+ *     driver: "direct",
+ * }
+ */
 class DirectEventBusFactory implements EventBusFactoryInterface
 {
     private SubscriptionHandlerResolverInterface $subscriptionHandlerResolver;
@@ -28,7 +33,7 @@ class DirectEventBusFactory implements EventBusFactoryInterface
     }
 
     /**
-     * @param array $config
+     * @param DirectEventBusFactoryConfig $config
      * @param EventBusSubscriptionManagerInterface $subscriptionManager
      * @return EventBusInterface
      */

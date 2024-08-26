@@ -51,7 +51,7 @@ trait RabbitMqFactoryConnectable
         $this->closeConnection();
     }
 
-    public function closeConnection()
+    public function closeConnection(): void
     {
         if (in_array(RabbitMqHasHeartbeatSender::class, class_uses($this))) {
             $this->unregisterHeartbeatSender(); /** @phpstan-ignore-line */
