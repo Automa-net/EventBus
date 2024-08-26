@@ -5,6 +5,9 @@ namespace AutomaNet\EventBus\Events;
 use AutomaNet\EventBus\Contracts\Event\EventInterface;
 use AutomaNet\EventBus\Contracts\Event\EventPayloadInterface;
 
+/**
+ * @template TRawPayload of array
+ */
 abstract class Event implements EventInterface
 {
     protected EventPayloadInterface $payload;
@@ -55,7 +58,7 @@ abstract class Event implements EventInterface
     }
 
     /**
-     * @param array $payload
+     * @param TRawPayload $payload
      * @return static
      * @throws \Exception
      */

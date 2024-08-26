@@ -2,14 +2,23 @@
 
 namespace AutomaNet\EventBus;
 
+use AutomaNet\EventBus\Contracts\Event\EventInterface;
+use AutomaNet\EventBus\Contracts\EventBus\EventBusInterface;
 use AutomaNet\EventBus\Contracts\EventBusManagerInterface;
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+use AutomaNet\EventBus\Contracts\Subscription\EventSubscriberInterface;
 use AutomaNet\EventBus\Subscription\EventBusSubscriptionManager;
 
 class EventBusManager implements EventBusManagerInterface
 {
+    /**
+     * @var EventBusSubscriptionManagerInterface[]
+     */
     private array $subscriptionManagers = [];
 
+    /**
+     * @var EventBusInterface[]
+     */
     private array $eventBuses = [];
 
     private EventBusFactory $eventBusFactory;
@@ -22,17 +31,38 @@ class EventBusManager implements EventBusManagerInterface
         $this->defaultConnection = $defaultConnection;
     }
 
-    public function subscribe($eventListenerClassName, ?int $priority = 100, ?string $connection = null): void
+    /**
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
+     * @param string|null $connection
+     * @return void
+     */
+    public function subscribe(string $eventSubscriberClassName, int $priority = 100, ?string $connection = null): void
     {
-        $this->getEventBus($connection)->subscribe($eventListenerClassName, $priority);
+        $this->getEventBus($connection)->subscribe($eventSubscriberClassName, $priority);
     }
 
+    /**
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
+     * @param string|null $connection
+     * @return void
+     */
+    public function unsubscribe(string $eventSubscriberClassName, int $priority = 100, ?string $connection = null): void {
+        $this->getEventBus($connection)->unsubscribe($eventSubscriberClassName, $priority);
+    }
+
+    /**
+     * @param EventInterface[] $events
+     * @param string|null $connection
+     * @return void
+     */
     public function publish(array $events, ?string $connection = null): void
     {
         $this->getEventBus($connection)->publish($events);
     }
 
-    public function getEventBus(?string $connection = null): EventBus
+    public function getEventBus(?string $connection = null): EventBusInterface
     {
         $connection = $connection ?? $this->defaultConnection;
 
@@ -52,6 +82,9 @@ class EventBusManager implements EventBusManagerInterface
         return $this->subscriptionManagers[$connection];
     }
 
+    /**
+     * @return EventBusSubscriptionManagerInterface[]
+     */
     public function getSubscriptionManagers(): array
     {
         return $this->subscriptionManagers;

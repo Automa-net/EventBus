@@ -3,6 +3,7 @@
 namespace AutomaNet\EventBus\Subscription;
 
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+use AutomaNet\EventBus\Contracts\Subscription\EventSubscriberInterface;
 use AutomaNet\EventBus\Reflection\ReflectionEventHandler;
 use AutomaNet\EventBus\Reflection\ReflectionEventSubscriber;
 
@@ -14,12 +15,12 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
     private array $handlers = [];
 
     /**
-     * @var array<string>
+     * @var class-string<EventSubscriberInterface>[]
      */
-    private array $registeredListeners = [];
+    private array $subscribers = [];
 
     /**
-     * @param string $subscriber
+     * @param class-string<EventSubscriberInterface> $subscriber
      * @param int $priority
      * @return void
      * @throws \Exception
@@ -32,7 +33,25 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
             $this->registerHandler($reflectionEventHandler->getEventName(), $reflectionEventHandler, $priority);
         }
 
-        $this->registeredListeners[] = $subscriber;
+        $this->subscribers[] = $subscriber;
+    }
+
+    /**
+     * @param class-string<EventSubscriberInterface> $subscriber
+     * @param int $priority
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function unregisterSubscriber(string $subscriber, int $priority = 100)
+    {
+        $this->subscribers = array_filter($this->subscribers, fn(string $currentSubscriber) => $currentSubscriber !== $subscriber);
+
+        $unsubscribeEventHandlers = (new ReflectionEventSubscriber($subscriber))->getHandlers();
+        foreach ($unsubscribeEventHandlers as $unsubscribeEventHandler) {
+            foreach ($this->handlers[$unsubscribeEventHandler->getEventName()] as $priority => $unsubscribeHandlers) {
+                $this->handlers[$unsubscribeEventHandler->getEventName()][$priority] = array_filter($unsubscribeHandlers, fn(ReflectionEventHandler $handler) => $handler->getSubscriberClass() !== $unsubscribeEventHandler->getSubscriberClass());
+            }
+        }
     }
 
     /**
@@ -41,7 +60,7 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
      */
     private function assertListenerIsNotRegistered(string $subscriber)
     {
-        if (in_array($subscriber, $this->registeredListeners)) {
+        if (in_array($subscriber, $this->subscribers)) {
             throw new \InvalidArgumentException('Listener ' . $subscriber . ' already registered');
         }
     }

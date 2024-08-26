@@ -37,8 +37,10 @@
         "psr/container": "^1.0"
     },
     "require-dev": {
+        "ext-sockets": "*",
+        "ext-pcntl": "*",
         "symfony/dependency-injection": "^5.4",
-        "php-amqplib/php-amqplib": "^3.4",
+        "php-amqplib/php-amqplib": "^3.7",
         "phpstan/phpstan": "^1.8",
         "friendsofphp/php-cs-fixer": "^3.13",
         "phpunit/phpunit": "^9.5"

@@ -2,9 +2,11 @@
 
 namespace AutomaNet\EventBus;
 
+use AutomaNet\EventBus\Contracts\Event\EventInterface;
 use AutomaNet\EventBus\Contracts\EventBus\EventBusInterface;
 use AutomaNet\EventBus\Contracts\IEventPublisher;
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+use AutomaNet\EventBus\Contracts\Subscription\EventSubscriberInterface;
 
 class EventBus implements EventBusInterface
 {
@@ -23,19 +25,29 @@ class EventBus implements EventBusInterface
     }
 
     /**
-     * @param $eventListenerClassName
-     * @param int|null $priority
-     * @param string|null $connection
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
      * @return void
      * @throws \Exception
      */
-    public function subscribe($eventListenerClassName, ?int $priority = 100, ?string $connection = null): void
+    public function subscribe(string $eventSubscriberClassName, int $priority = 100): void
     {
-        $this->subscriptionManager->registerSubscriber($eventListenerClassName, $priority);
+        $this->subscriptionManager->registerSubscriber($eventSubscriberClassName, $priority);
     }
 
     /**
-     * @param array $events
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
+     * @return void
+     * @throws \Exception
+     */
+    public function unsubscribe(string $eventSubscriberClassName, int $priority = 100)
+    {
+        $this->subscriptionManager->unregisterSubscriber($eventSubscriberClassName, $priority);
+    }
+
+    /**
+     * @param EventInterface[] $events
      * @param string|null $connection
      * @return void
      */

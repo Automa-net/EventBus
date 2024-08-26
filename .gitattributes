@@ -3,3 +3,5 @@
 /examples export-ignore
 /phpstan* export-ignore
 /phpunit.xml.dist export-ignore
+/Dockerfile export-ignore
+/docker-compose.yml export-ignore

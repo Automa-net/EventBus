@@ -2,17 +2,29 @@
 
 namespace AutomaNet\EventBus\Contracts\EventBus;
 
+use AutomaNet\EventBus\Contracts\Event\EventInterface;
 use AutomaNet\EventBus\Contracts\Subscription\EventBusSubscriptionManagerInterface;
+use AutomaNet\EventBus\Contracts\Subscription\EventSubscriberInterface;
 
 interface EventBusInterface
 {
     /**
-     * Subscribes the event listener to the event bus.
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
+     * @return void
      */
-    public function subscribe($eventListenerClassName, int $priority): void;
+    public function subscribe(string $eventSubscriberClassName, int $priority = 100): void;
 
     /**
-     * Publishes the events from the domain event stream to the listeners.
+     * @param class-string<EventSubscriberInterface> $eventSubscriberClassName
+     * @param int $priority
+     * @return void
+     */
+    public function unsubscribe(string $eventSubscriberClassName, int $priority = 100);
+
+    /**
+     * @param EventInterface[] $events
+     * @return void
      */
     public function publish(array $events): void;
 

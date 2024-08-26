@@ -7,12 +7,20 @@ use AutomaNet\EventBus\Reflection\ReflectionEventHandler;
 interface EventBusSubscriptionManagerInterface
 {
     /**
-     * @param string $subscriber
+     * @param class-string<EventSubscriberInterface> $subscriber
      * @param int $priority
      * @return void
      * @throws \Exception
      */
-    public function registerSubscriber(string $subscriber, int $priority);
+    public function registerSubscriber(string $subscriber, int $priority = 100);
+
+    /**
+     * @param class-string<EventSubscriberInterface> $subscriber
+     * @param int $priority
+     * @return void
+     * @throws \Exception
+     */
+    public function unregisterSubscriber(string $subscriber, int $priority = 100);
 
     /**
      * @param string $eventName

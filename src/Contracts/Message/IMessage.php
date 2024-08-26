@@ -14,6 +14,9 @@ interface IMessage
 
     public function getCreatedAt(): \DateTimeImmutable;
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getBody(): array;
 
     public function getHeaders(): array;
