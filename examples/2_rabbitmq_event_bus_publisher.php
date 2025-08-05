@@ -38,7 +38,14 @@ $channel->queue_declare($config['consumer']['queue'], false, true, false, false,
     'x-dead-letter-exchange' => 'vendor.example.exchange.dl'
 ]));
 $channel->exchange_declare($config['publisher']['exchange'], AMQPExchangeType::TOPIC, false, true, false);
+$channel->queue_declare('automanet-eventbus-consumer_ttl', false, true, false, false, false, new \PhpAmqpLib\Wire\AMQPTable([
+    'x-dead-letter-exchange' => $config['publisher']['exchange'],
+    'x-message-ttl' => 5000
+]));
+$channel->queue_declare('automanet-eventbus-parking-lot', false, true, false, false, false);
+$channel->exchange_declare('vendor.example.exchange.dl', AMQPExchangeType::TOPIC, false, true, false);
 $channel->queue_bind($config['consumer']['queue'], $config['publisher']['exchange'], 'vendor.#');
+$channel->queue_bind('automanet-eventbus-consumer_ttl', 'vendor.example.exchange.dl', 'vendor.#');
 
 $channel->close();
 $connection->close();
@@ -67,6 +74,6 @@ $event = ProductUpdated::newFromArray([
     'name' => 'Hello'
 ]);
 
-for ($i = 0; $i < 10000; $i++) {
+for ($i = 0; $i < 2; $i++) {
     $eventBus->publish([$event]);
 }
