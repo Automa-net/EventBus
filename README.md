@@ -33,7 +33,9 @@ $config = [
     'consumer' => [
         'queue' => INTEGRATION_EVENTBUS_AMQP_CONSUMER_QUEUE,
         'enable_heartbeat_sender' => false,
-        'prefetch_count' => 3
+        'prefetch_count' => 3,
+        'max_retries' => 3 // Default 3,
+        'parking_lot_queue_name' => null // When max retries are exceeded and parking_lot is not set up, the message will be dropped.
     ],
 
     'publisher' => [

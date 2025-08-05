@@ -8,7 +8,9 @@ namespace AutomaNet\EventBus\Driver\RabbitMq;
  *     queue: string,
  *     enable_heartbeat_sender?: bool,
  *     prefetch_count?: int,
- *     consumer_tag?: string
+ *     consumer_tag?: string,
+ *     max_retries?: int,
+ *     parking_lot_queue_name?: string,
  * }
  */
 class RabbitMqConsumerConfig
@@ -20,6 +22,10 @@ class RabbitMqConsumerConfig
     private bool $enableHeartbeatSender = false;
 
     private int $prefetchCount = 1000;
+
+    private int $maxRetries = 3;
+
+    private ?string $parkingLotQueueName = null;
 
     /**
      * @return string
@@ -50,6 +56,16 @@ class RabbitMqConsumerConfig
         return $this->consumerTag;
     }
 
+    public function getMaxRetries(): int
+    {
+        return $this->maxRetries;
+    }
+
+    public function getParkingLotQueueName(): ?string
+    {
+        return $this->parkingLotQueueName;
+    }
+
     /**
      * @param RabbitMqConsumerConfigArray $configData
      * @return self
@@ -75,6 +91,14 @@ class RabbitMqConsumerConfig
 
         if (isset($configData['consumer_tag'])) {
             $config->consumerTag = strval($configData['consumer_tag']);
+        }
+
+        if (isset($configData['max_retries'])) {
+            $config->maxRetries = intval($configData['max_retries']);
+        }
+
+        if (isset($configData['parking_lot_queue_name'])) {
+            $config->parkingLotQueueName = $configData['parking_lot_queue_name'];
         }
 
         return $config;

@@ -48,7 +48,8 @@ class EventBusManager implements EventBusManagerInterface
      * @param string|null $connection
      * @return void
      */
-    public function unsubscribe(string $eventSubscriberClassName, int $priority = 100, ?string $connection = null): void {
+    public function unsubscribe(string $eventSubscriberClassName, int $priority = 100, ?string $connection = null): void
+    {
         $this->getEventBus($connection)->unsubscribe($eventSubscriberClassName, $priority);
     }
 

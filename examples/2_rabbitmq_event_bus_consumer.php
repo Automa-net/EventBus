@@ -22,6 +22,8 @@ $config = [
     'consumer' => [
         'queue' => INTEGRATION_EVENTBUS_AMQP_CONSUMER_QUEUE,
         'enable_heartbeat_sender' => true,
+        'max_retries' => 3,
+        'parking_lot_queue_name' => 'automanet-eventbus-parking-lot',
     ],
 
     'publisher' => [
