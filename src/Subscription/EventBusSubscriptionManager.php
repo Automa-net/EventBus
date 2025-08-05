@@ -44,12 +44,12 @@ class EventBusSubscriptionManager implements EventBusSubscriptionManagerInterfac
      */
     public function unregisterSubscriber(string $subscriber, int $priority = 100)
     {
-        $this->subscribers = array_filter($this->subscribers, fn(string $currentSubscriber) => $currentSubscriber !== $subscriber);
+        $this->subscribers = array_filter($this->subscribers, fn (string $currentSubscriber) => $currentSubscriber !== $subscriber);
 
         $unsubscribeEventHandlers = (new ReflectionEventSubscriber($subscriber))->getHandlers();
         foreach ($unsubscribeEventHandlers as $unsubscribeEventHandler) {
             foreach ($this->handlers[$unsubscribeEventHandler->getEventName()] as $priority => $unsubscribeHandlers) {
-                $this->handlers[$unsubscribeEventHandler->getEventName()][$priority] = array_filter($unsubscribeHandlers, fn(ReflectionEventHandler $handler) => $handler->getSubscriberClass() !== $unsubscribeEventHandler->getSubscriberClass());
+                $this->handlers[$unsubscribeEventHandler->getEventName()][$priority] = array_filter($unsubscribeHandlers, fn (ReflectionEventHandler $handler) => $handler->getSubscriberClass() !== $unsubscribeEventHandler->getSubscriberClass());
             }
         }
     }

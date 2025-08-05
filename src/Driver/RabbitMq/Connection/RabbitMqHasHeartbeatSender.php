@@ -13,7 +13,11 @@ trait RabbitMqHasHeartbeatSender
 
     public function registerHeartbeatSender(AMQPChannel $channel): void
     {
-        if ($this->enableHeartbeatSender && in_array(RabbitMqFactoryConnectable::class, class_uses($this))) {
+        if (isset($this->heartbeatSender) || !$this->enableHeartbeatSender) {
+            return;
+        }
+
+        if (in_array(RabbitMqFactoryConnectable::class, class_uses($this))) {
             $this->heartbeatSender = new PCNTLHeartbeatSender($channel->getConnection());
             $this->heartbeatSender->register();
         }
